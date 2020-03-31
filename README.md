@@ -1,5 +1,11 @@
 # Boardgames
 
+## Setup
+Go to the root of the repository, then run:
+```
+pip install .
+```
+
 ## Play codenames
 To play codenames through a facebook chat, run:
 

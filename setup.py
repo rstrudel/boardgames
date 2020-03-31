@@ -18,5 +18,4 @@ setup(
     version='0.0.1',
     description='Board Games',
     packages=find_packages(),
-)
-# install_requires=read_requirements_file('requirements.txt'))
+    install_requires=read_requirements_file('requirements.txt'))
