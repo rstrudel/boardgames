@@ -163,7 +163,7 @@ class Codenames:
         # print teams
         str_teams = ""
         for color, team_str, spy in zip(team_color, teams_str, spies):
-            str_teams += "équipe {}: {}\nespion: {}\n".format(color, team_str, spy.name)
+            str_teams += "Equipe {}: {}\nEspion: {}\n".format(color, team_str, spy.name)
         global_sender.send_message(str_teams[:-1])
         # send words grid
         self.save_players_grid(players_grid_path)
