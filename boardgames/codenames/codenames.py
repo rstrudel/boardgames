@@ -130,14 +130,16 @@ class Codenames:
     def play(self, client, global_sender, spies_sender):
         # players subscription
         subscription_message = "+1"
-        subscription_end = "fin inscription"
+        subscription_end_message = "fin inscription"
         global_sender.send_message(
             "Codenames: inscription\nPour participer, envoyez {}.\n"
-            "Pour commencer le jeu, envoyez {}.".format(
-                subscription_message, subscription_end
+            "Pour clore les inscriptions et commencer le jeu, envoyez {}.".format(
+                subscription_message, subscription_end_message
             )
         )
-        players = client.selfSubscription(subscription_message, subscription_end)
+        players = client.selfSubscription(
+            subscription_message, subscription_end_message
+        )
         global_sender.send_message("Codenames: fin des inscriptions.")
         random.shuffle(players)
 
@@ -161,9 +163,7 @@ class Codenames:
         # print teams
         str_teams = ""
         for color, team_str, spy in zip(team_color, teams_str, spies):
-            str_teams += "équipe {}: {}\nespion: {} {}\n".format(
-                color, team_str, spy.first_name, spy.last_name
-            )
+            str_teams += "équipe {}: {}\nespion: {}\n".format(color, team_str, spy.name)
         global_sender.send_message(str_teams[:-1])
         # send words grid
         self.save_players_grid(players_grid_path)
@@ -172,8 +172,12 @@ class Codenames:
         self.save_spy_grid(spy_grid_path)
         spies_sender.send_image(spy_grid_path, "Grille espion")
 
+        turn_end_message = "fin du tour"
         global_sender.send_message(
-            "équipe {}\n"
+            "Pour finir un tour, envoyez {}".format(turn_end_message)
+        )
+        global_sender.send_message(
+            "Equipe {}\n"
             "{} à votre tour".format(
                 team_color[self.red_playing], teams_str[self.red_playing]
             )
@@ -193,7 +197,7 @@ class Codenames:
                 return False
 
             if valid_message:
-                if utils.format_str(text) == "fin du tour":
+                if utils.format_str(text) == turn_end_message:
                     switch_teams = True
                 else:
                     loc = self.loc_on_grid(text)
@@ -207,12 +211,12 @@ class Codenames:
                 global_sender.send_image(players_grid_path, caption)
                 if square_type == "lose":
                     global_sender.send_message(
-                        "Equipe {}\n{}, vous etes de niveau 93.".format(
+                        "Equipe {}\n{}, c'est la defaite!.".format(
                             team_color[red_playing], teams_str[red_playing]
                         )
                     )
                     global_sender.send_message(
-                        "Equipe {}\n{}, vous etes digne des 92.".format(
+                        "Equipe {}\n{}, bien joue!".format(
                             team_color[1 - red_playing], teams_str[1 - red_playing]
                         )
                     )
@@ -224,7 +228,7 @@ class Codenames:
                 red_playing = 1 - red_playing
                 self.red_playing = red_playing
 
-            if not end_game:
+            if valid_message and not end_game:
                 global_sender.send_message(
                     "Equipe {}\n"
                     "{} à votre tour".format(
